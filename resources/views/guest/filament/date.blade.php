@@ -1,0 +1,1 @@
+{{ $getRecord()->created_at }}
