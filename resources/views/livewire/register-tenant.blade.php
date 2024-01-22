@@ -1,10 +1,15 @@
 <div>
+    @php
+        $settings = \App\Models\Setting::get();
+    @endphp
+
     <div>
         {{ $this->form }}
     </div>
     <div class="flex flex-col 2xl:flex-none  mt-4 2xl:justify-between items-center">
         <div>
-            <p class="text-green-700 text-center">By registering an account with Amaia Skies, you agree to provide
+            <p class="text-green-700 text-center">By registering an account with
+                {{ $settings->first()->project_name ?? 'Na' }}, you agree to provide
                 accurate and complete information and to keep your account credentials secure.
             </p>
         </div>

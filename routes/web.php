@@ -66,6 +66,9 @@ Route::prefix('administrator')->middleware(['auth', 'verified'])->group(function
     Route::get('/reports', function () {
         return view('admin.reports');
     })->name('admin.reports');
+    Route::get('/settings', function () {
+        return view('admin.settings');
+    })->name('admin.settings');
 
 
 });

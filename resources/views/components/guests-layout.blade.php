@@ -1,11 +1,18 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+@php
+    $settings = \App\Models\Setting::get();
+@endphp
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <link rel="shortcut icon" href="{{ asset('images/favicon.png') }}" />
+    @if ($settings->count() > 0)
+        <link rel="shortcut icon" href="{{ Storage::url($settings->first()->favicon_path) }}" />
+    @else
+        <link rel="shortcut icon" href="{{ asset('images/favicon.png') }}" />
+    @endif
 
     <title>{{ config('app.name', 'Laravel') }}</title>
 
@@ -30,7 +37,12 @@
 
 <body class="font-sans antialiased relative" x-data="app()">
     <div class="fixed bg-gray-800 top-0 left-0 bottom-0  right-0">
-        <img src="{{ asset('images/page_bg.jpg') }}" class="h-full w-full opacity-50 object-cover" alt="">
+        @if ($settings->count() > 0)
+            <img src="{{ Storage::url($settings->first()->background_path) }}"
+                class="h-full w-full opacity-50 object-cover" alt="">
+        @else
+            <img src="{{ asset('images/page_bg.jpg') }}" class="h-full w-full opacity-50 object-cover" alt="">
+        @endif
     </div>
     <div x-data="{ accept: {{ auth()->user()->is_accepted == true ? 'false' : 'true' }} }">
         <div class="bg-white relative border-b w-full">
@@ -40,7 +52,13 @@
                     <div class="flex flex-row items-center justify-between lg:justify-start">
                         <a class="text-lg tracking-tight text-black uppercase focus:outline-none focus:ring lg:text-2xl"
                             href="/">
-                            <img src="{{ asset('images/amaia_logo.png') }}" class="h-8" alt="">
+
+                            @if ($settings->count() > 0)
+                                <img src="{{ Storage::url($settings->first()->logo_path) }}" class="h-8"
+                                    alt="">
+                            @else
+                                <img src="{{ asset('images/amaia_logo.png') }}" class="h-8" alt="">
+                            @endif
                         </a>
                         <div class="flex space-x-1 items-center">
                             <a href="{{ route('guest.inbox') }}" class="2xl:hidden relative  group">
@@ -157,8 +175,8 @@
                 </a>
                 <a href="{{ route('guest.profile') }}"
                     class="{{ request()->routeIs('guest.profile') ? 'bg-white text-[#1c4c4e]' : 'text-white ' }} hover:bg-white hover:text-[#1c4c4e] rounded-3xl grid place-content-center h-14">
-                    <svg class="w-10 h-10" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
-                        aria-hidden="true">
+                    <svg class="w-10 h-10" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                        fill="currentColor" aria-hidden="true">
                         <path
                             d="M9 2C6.38 2 4.25 4.13 4.25 6.75c0 2.57 2.01 4.65 4.63 4.74.08-.01.16-.01.22 0h.07a4.738 4.738 0 004.58-4.74C13.75 4.13 11.62 2 9 2z"
                             opacity=".4"></path>

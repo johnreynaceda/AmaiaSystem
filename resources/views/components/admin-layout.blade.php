@@ -1,11 +1,18 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+@php
+    $settings = \App\Models\Setting::get();
+@endphp
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <link rel="shortcut icon" href="{{ asset('images/favicon.png') }}" />
+    @if ($settings->count() > 0)
+        <link rel="shortcut icon" href="{{ Storage::url($settings->first()->favicon_path) }}" />
+    @else
+        <link rel="shortcut icon" href="{{ asset('images/favicon.png') }}" />
+    @endif
 
     <title>{{ config('app.name', 'Laravel') }}</title>
 
@@ -29,8 +36,14 @@
 </head>
 
 <body class="font-sans antialiased relative">
+
     <div class="fixed bg-gray-800 top-0 left-0 bottom-0  right-0">
-        <img src="{{ asset('images/page_bg.jpg') }}" class="h-full w-full opacity-50 object-cover" alt="">
+        @if ($settings->count() > 0)
+            <img src="{{ Storage::url($settings->first()->background_path) }}"
+                class="h-full w-full opacity-50 object-cover" alt="">
+        @else
+            <img src="{{ asset('images/page_bg.jpg') }}" class="h-full w-full opacity-50 object-cover" alt="">
+        @endif
     </div>
     <div class="flex h-screen overflow-hidden  relative bg-[#1c4c4e] bg-opacity-50">
         <div class="hidden md:flex md:flex-shrink-0">
@@ -39,7 +52,12 @@
                     <div class="flex flex-col flex-shrink-0 px-4">
                         <a class="text-lg font-semibold flex justify-center items-center tracking-tighter text-black focus:outline-none focus:ring "
                             href="">
-                            <img src="{{ asset('images/sidebar_logo.png') }}" class="" alt="">
+                            @if ($settings->count() > 0)
+                                <img src="{{ Storage::url($settings->first()->logo_path) }}" class="h-20"
+                                    alt="">
+                            @else
+                                <img src="{{ asset('images/sidebar_logo.png') }}" class="h-20" alt="">
+                            @endif
                         </a>
                         <button class="hidden rounded-lg focus:outline-none focus:shadow-outline">
                             <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
@@ -61,8 +79,14 @@
                                     <span class="flex-shrink-0 block group">
                                         <div class="flex items-center">
                                             <div>
-                                                <img class="inline-block object-cover rounded-full h-12 w-12"
-                                                    src="{{ asset('images/favicon.png') }}" alt="">
+                                                @if ($settings->count() > 0)
+                                                    <img class="inline-block object-cover rounded-full h-12 w-12"
+                                                        src="{{ Storage::url($settings->first()->logo_path) }}"
+                                                        alt="">
+                                                @else
+                                                    <img class="inline-block object-cover rounded-full h-12 w-12"
+                                                        src="{{ asset('images/favicon.png') }}" alt="">
+                                                @endif
                                             </div>
                                             <div class="ml-3 text-left">
                                                 <p
@@ -80,10 +104,7 @@
                         </div>
                     </div>
                     <div class="flex flex-col flex-grow px-4 relative">
-                        <div class="absolute -bottom-20 -left-24">
-                            <img src="{{ asset('images/lnwuLogo.png') }}" class="h-96 object-cover opacity-10"
-                                alt="">
-                        </div>
+
                         <nav class="flex-1 space-y-1 ">
 
                             <ul>
@@ -143,28 +164,7 @@
                                         @endif
                                     </a>
                                 </li>
-                                {{-- <li>
-                                    <a class="{{ request()->routeIs('admin.complaints') ? 'bg-white text-[#1c4c4e] fill-[#1c4c4e] scale-95' : 'fill-white text-white ' }} inline-flex group items-center w-full px-4 py-1.5 mt-1  transition duration-200 ease-in-out transform rounded-lg focus:shadow-outline hover:bg-gray-100 hover:scale-95 hover:text-[#1c4c4e] hover:fill-[#1c4c4e]"
-                                        href="{{ route('admin.complaints') }}">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-                                            class="w-5 h-5 md hydrated">
-                                            <path
-                                                d="M21 8V20.9932C21 21.5501 20.5552 22 20.0066 22H3.9934C3.44495 22 3 21.556 3 21.0082V2.9918C3 2.45531 3.4487 2 4.00221 2H14.9968L21 8ZM19 9H14V4H5V20H19V9ZM8 7H11V9H8V7ZM8 11H16V13H8V11ZM8 15H16V17H8V15Z">
-                                            </path>
-                                        </svg>
-                                        <span class="ml-3 flex-1">
-                                            Complaints
-                                        </span>
 
-
-                                        @if (\App\Models\Complaint::count() > 0)
-                                            <span
-                                                class="{{ request()->routeIs('admin.complaints') ? 'bg-gray-700 text-white' : 'bg-white' }}  group-hover:bg-gray-700 group-hover:text-white px-2 rounded-md  text-gray-700 font-semibold">
-                                                \App\Models\Complaint::count()
-                                            </span>
-                                        @endif
-                                    </a>
-                                </li> --}}
                                 <li>
                                     <a class="{{ request()->routeIs('admin.announcement') ? 'bg-white text-[#1c4c4e] fill-[#1c4c4e] scale-95' : 'fill-white text-white ' }} inline-flex group items-center w-full px-4 py-1.5 mt-1  transition duration-200 ease-in-out transform rounded-lg focus:shadow-outline hover:bg-gray-100 hover:scale-95 hover:text-[#1c4c4e] hover:fill-[#1c4c4e]"
                                         href="{{ route('admin.announcement') }}">
@@ -307,18 +307,46 @@
                                     </a>
                                 </li>
                             </ul>
+                            <p class="px-4 pt-3 text-xs font-semibold text-gray-200 uppercase">
+                                SETTINGS
+                            </p>
+                            <ul>
+                                <li>
+                                    <a class="{{ request()->routeIs('admin.settings') ? 'bg-white text-[#1c4c4e] fill-[#1c4c4e] scale-95' : 'fill-white text-white ' }} inline-flex items-center w-full px-4 py-1.5 mt-1  transition duration-200 ease-in-out transform rounded-lg focus:shadow-outline hover:bg-gray-100 hover:scale-95 hover:text-[#1c4c4e] hover:fill-[#1c4c4e]"
+                                        href="{{ route('admin.settings') }}">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                                            class="w-5 h-5 md hydrated">
+                                            <path
+                                                d="M3 18H21V6H3V18ZM1 5C1 4.44772 1.44772 4 2 4H22C22.5523 4 23 4.44772 23 5V19C23 19.5523 22.5523 20 22 20H2C1.44772 20 1 19.5523 1 19V5ZM9 10C9 9.44772 8.55228 9 8 9C7.44772 9 7 9.44772 7 10C7 10.5523 7.44772 11 8 11C8.55228 11 9 10.5523 9 10ZM11 10C11 11.6569 9.65685 13 8 13C6.34315 13 5 11.6569 5 10C5 8.34315 6.34315 7 8 7C9.65685 7 11 8.34315 11 10ZM8.0018 16C7.03503 16 6.1614 16.3907 5.52693 17.0251L4.11272 15.6109C5.10693 14.6167 6.4833 14 8.0018 14C9.52031 14 10.8967 14.6167 11.8909 15.6109L10.4767 17.0251C9.84221 16.3907 8.96858 16 8.0018 16ZM13 9V15H15V9H13ZM17 9V15H19V9H17Z">
+                                            </path>
+                                        </svg>
+                                        <span class="ml-3">
+                                            System Settings
+                                        </span>
+                                    </a>
+                                </li>
+                            </ul>
                         </nav>
                     </div>
                     <div class="p-2 relative">
                         <div
                             class="flex flex-col items-start p-3 transition duration-150 ease-in-out bg-gray-100 rounded-xl">
                             <div>
-                                <img class="inline-block rounded-full object-cover h-9 w-9"
-                                    src="{{ asset('images/favicon.png') }}" alt="">
+                                @if ($settings->count() > 0)
+                                    <img class="inline-block rounded-full object-cover h-9 w-9"
+                                        src="{{ Storage::url($settings->first()->logo_path) }}" alt="">
+                                @else
+                                    <img class="inline-block rounded-full object-cover h-9 w-9"
+                                        src="{{ asset('images/favicon.png') }}" alt="">
+                                @endif
                             </div>
                             <div>
-                                <p class="mt-2 text-base font-bold text-[#1c4c4e]">
-                                    AMAIA SKIES
+                                <p class="mt-2 text-base font-bold uppercase text-[#1c4c4e]">
+                                    @if ($settings->count() > 0)
+                                        {{ $settings->first()->project_name }}
+                                    @else
+                                        AMAIA SKIES
+                                    @endif
                                 </p>
                             </div>
 
@@ -333,8 +361,13 @@
                     <div class="relative flex-shrink-0 ml-5" @click.away="open = false" x-data="{ open: false }">
                         <div>
                             <button @click="open = !open" class="flex space-x-3 items-center group">
-                                <img src="{{ asset('images/favicon.png') }}"
-                                    class="h-12 w-12 rounded-full object-cover bg-white" alt="">
+                                @if ($settings->count() > 0)
+                                    <img src="{{ Storage::url($settings->first()->logo_path) }}"
+                                        class="h-12 w-12 rounded-full object-cover bg-white" alt="">
+                                @else
+                                    <img src="{{ asset('images/favicon.png') }}"
+                                        class="h-12 w-12 rounded-full object-cover bg-white" alt="">
+                                @endif
                                 <div class="flex space-x-5 items-center ">
                                     <div class="flex flex-col text-left">
                                         <h1 class="font-bold text-white group-hover:text-gray-100 uppercase">

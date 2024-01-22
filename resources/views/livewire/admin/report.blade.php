@@ -1,4 +1,7 @@
 <div x-data>
+    @php
+        $settings = \App\Models\Setting::get();
+    @endphp
     <div class="bg-white rounded-xl p-5">
         <div class="flex justify-between">
             <div class="w-72">
@@ -20,9 +23,14 @@
         </div>
         <div class="mt-10 px-10" x-ref="printContainer">
             <div class="flex items-center space-x-1">
-                <img src="{{ asset('images/favicon.png') }}" class="h-20" alt="">
+                @if ($settings->count() > 0)
+                    <img src="{{ Storage::url($settings->first()->logo_path) }}" class="h-20" alt="">
+                @else
+                    <img src="{{ asset('images/favicon.png') }}" class="h-20" alt="">
+                @endif
                 <div>
-                    <h1 class="font-bold text-2xl uppercase text-gray-700">AMAIA SKIES - Information Management System
+                    <h1 class="font-bold text-2xl uppercase text-gray-700">
+                        {{ $settings->first()->project_name ?? 'NONE' }} - Information Management System
                     </h1>
                     <h1 class="leading-3">Monthly Report ({{ now()->format('F') }})</h1>
                 </div>
